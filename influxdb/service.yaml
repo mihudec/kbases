@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb-hl
+  labels:
+    app.kubernetes.io/name: influxdb
+spec:
+  ports:
+  - port: 8086
+    name: http
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: influxdb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb-svc
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: influxdb
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: http
