@@ -10,13 +10,21 @@ spec:
     metadata:
       labels: {}
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
-      - image: telegraf:1.27.4
+      - image: telegraf:1.40.3
         imagePullPolicy: IfNotPresent
         name: telegraf
         envFrom:
         - secretRef:
             name: telegraf-env
+        args:
+          - "--unprotected"
         env:
         - name: NODE_NAME
           valueFrom:
@@ -31,17 +39,17 @@ spec:
           readOnly: true
         resources:
           limits:
-            cpu: "100m"
-            memory: "128Mi"
+            memory: "256Mi"
           requests:
-            cpu: "100m"
-            memory: "128Mi"
+            cpu: "200m"
+            memory: "256Mi"
         securityContext:
           allowPrivilegeEscalation: false
-          privileged: false
-          readOnlyRootFilesystem: false
-          runAsNonRoot: true
-          runAsUser: 999
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - NET_RAW
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       volumes:
